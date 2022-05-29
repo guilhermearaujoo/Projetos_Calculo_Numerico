@@ -19,7 +19,29 @@ def any_to_decimal(num_original, base_original):
 
     dic = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
+
     dec = 0
+
+    if '.' in num_original:
+        num_temp = ''
+        decimal = ''
+        
+        cont = 0
+        for i in num_original:
+            cont+=1
+            if i == '.':
+                for j in range(cont, len(num_original)):
+                    decimal += num_original[j]
+                elev = -1
+                for z in range(len(decimal)):
+                    dec += dic.index(decimal[z]) * base_original**(elev)
+                    elev -= 1
+                break
+            num_temp += i
+        
+        num_original = num_temp
+
+
     dec_temp = list(num_original)
     dec_temp.reverse()
     for x,i in enumerate(dec_temp):
@@ -43,29 +65,52 @@ def decimal_to_any(num_dec, base_final):
     assert(base_final>=2 and base_final<=32), "A base deve ser um número inteiro entre 2 e 32"
     assert(type(num_dec)==str), "O número deve ser passado em formato de string"
     assert(type(base_final)==int), "Operação inválida, a base original deve ser do tipo inteiro."
+ 
+    tol = 6
+    elev = 1 
 
-    num_dec = int(num_dec)
+    if '.' in num_dec:
+         
+        num_int = float(num_dec)
+        num_float = True
+        for i in range(tol):
+            elev *=  base_final
+        num_int *= elev
+        num_int = int(num_int)
+    else: 
+        num_int = int(num_dec)
+        num_float = False
+
 
     dic = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
     numero_final_temp = []
     numero_final = ''
+
     while True:
         
-        temp_numero_final = num_dec%base_final
+        temp_numero_final = num_int%base_final
         numero_final_temp.append(temp_numero_final)
 
-        if int(num_dec/base_final) == 0:
+        if int(num_int/base_final) == 0:
             break
-        num_dec = int(num_dec/base_final)
+        num_int = int(num_int/base_final)
+
+
+    pos = len(numero_final_temp) - tol
+    cont = 0
 
     numero_final_temp.reverse()
     for i in numero_final_temp:
-        numero_final += dic[i]  
+        numero_final += dic[i] 
+        cont += 1
+        if num_float and pos == cont:
+            numero_final += '.' 
+
     return numero_final
 
 
- 
+
 def troca_base(base_original,base_final, num_original):
     
     '''
@@ -103,7 +148,10 @@ def succ(a, S):
     assert(type(S)==str), "O número deve ser passado em formato de string"
 
     S_temp = any_to_decimal(S, a)
-    S = str(int(S_temp) + 1)
+    if "." in S_temp:
+        S = str(float(S_temp) + 1)
+    else:
+        S = str(int(S_temp) + 1)
 
     return decimal_to_any(S, a)
 
@@ -125,7 +173,11 @@ def ante(a, S):
     assert(type(S)==str), "O número deve ser passado em formato de string"
 
     S_temp = any_to_decimal(S, a)
-    S = str(int(S_temp) - 1)
+    if "." in S_temp:
+        S = str(float(S_temp) - 1)
+    else:
+        S = str(int(S_temp) - 1)
+        
 
     return decimal_to_any(S, a)
 
@@ -152,7 +204,11 @@ def soma(a,S,T):
     S_temp = any_to_decimal(S, a)
     T_temp = any_to_decimal(T, a)
 
-    soma_temp = int(S_temp) + int(T_temp)
+    if "." in S_temp or "." in T_temp:
+        soma_temp = float(S_temp) + float(T_temp)
+        print(float(S_temp))
+    else: 
+        soma_temp = int(S_temp) + int(T_temp)
 
     return decimal_to_any(str(soma_temp), a)
 
@@ -179,7 +235,10 @@ def prod(a,S,T):
     S_temp = any_to_decimal(S, a)
     T_temp = any_to_decimal(T, a)
 
-    soma_temp = int(S_temp) * int(T_temp)
+    if "." in S_temp or "." in T_temp:
+        soma_temp = float(S_temp) * float(T_temp)
+    else: 
+        soma_temp = int(S_temp) * int(T_temp)
 
     return decimal_to_any(str(soma_temp), a)
 
